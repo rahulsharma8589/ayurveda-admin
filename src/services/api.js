@@ -12,4 +12,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Add these to the bottom of admin/src/services/api.js
+
+export const getCategories = async () => {
+  const response = await api.get('/categories');
+  return response.data;
+};
+
+export const createCategory = async (categoryData) => {
+  const response = await api.post('/categories', categoryData);
+  return response.data;
+};
+
+export const deleteCategory = async (id) => {
+  const response = await api.delete(`/categories/${id}`);
+  return response.data;
+};
+
 export default api;

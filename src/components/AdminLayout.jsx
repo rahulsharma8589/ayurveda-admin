@@ -17,12 +17,13 @@ const AdminLayout = ({ children }) => {
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          {["products", "orders"].map((route) => (
+          {/* Added "categories" to the array here */}
+          {["products", "categories", "orders"].map((route) => (
             <NavLink
               key={route}
               to={`/${route}`}
               className={({ isActive }) =>
-                `block px-4 py-2 rounded ${
+                `block px-4 py-2 rounded transition-colors ${
                   isActive
                     ? "bg-green-100 text-green-700 font-medium"
                     : "text-gray-700 hover:bg-green-50"
@@ -36,7 +37,7 @@ const AdminLayout = ({ children }) => {
 
         <button
           onClick={logout}
-          className="m-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="m-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
         >
           Logout
         </button>

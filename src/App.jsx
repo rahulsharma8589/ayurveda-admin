@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import Product from "../../dinkar-backend/models/Product";
+import Categories from "./pages/Categories";
+import Products from "./pages/Product"; 
 import Orders from "./pages/Orders";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLayout from "./components/AdminLayout";
@@ -10,7 +11,20 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-
+        
+        {/* Protected Categories Route */}
+        <Route 
+          path="/categories" 
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <Categories />
+              </AdminLayout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Protected Product Route */}
         <Route
           path="/products"
           element={
@@ -22,6 +36,7 @@ function App() {
           }
         />
 
+        {/* Protected Orders Route */}
         <Route
           path="/orders"
           element={
