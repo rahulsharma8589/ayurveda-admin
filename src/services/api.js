@@ -12,20 +12,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Add these to the bottom of admin/src/services/api.js
+// admin/src/services/api.js
+
+// ... your other code ...
 
 export const getCategories = async () => {
-  const response = await api.get('/categories');
+  // 👇 Notice the /api/ prefix added here
+  const response = await api.get('/api/categories'); 
   return response.data;
 };
 
 export const createCategory = async (categoryData) => {
-  const response = await api.post('/categories', categoryData);
+  // 👇 Notice the /api/ prefix added here
+  const response = await api.post('/api/categories', categoryData);
   return response.data;
 };
 
 export const deleteCategory = async (id) => {
-  const response = await api.delete(`/categories/${id}`);
+  // 👇 Notice the /api/ prefix added here
+  const response = await api.delete(`/api/categories/${id}`);
   return response.data;
 };
 

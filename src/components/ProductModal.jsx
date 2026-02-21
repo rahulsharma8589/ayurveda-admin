@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api, { getCategories } from "../services/api";
 import Toast from "./Toast";
 import { uploadImagesToCloudinary } from "../services/cloudinary";
 
@@ -25,10 +25,33 @@ const ProductModal = ({ isOpen, onClose, onSuccess, product }) => {
   const [fileCount, setFileCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({});
+  
+  // State for Categories Dropdown
+  const [categories, setCategories] = useState([]);
 
-  // 3. Populate Form on Edit
+  // Fetch Categories and Populate Form on Edit
   useEffect(() => {
-    if (product) {
+    if (isOpen) {
+      // Fetch categories when modal opens
+      const fetchCategories = async () => {
+        try {
+          const data = await getCategories();
+          setCategories(data);
+          
+          // Automatically select the first category if creating a new product
+          // and no category is currently selected
+          if (!isEdit && data.length > 0 && !form.category) {
+            setForm((prev) => ({ ...prev, category: data[0].name }));
+          }
+        } catch (error) {
+          console.error("Failed to load categories", error);
+        }
+      };
+      
+      fetchCategories();
+    }
+
+    if (product && isOpen) {
       setForm({
         name: product.name,
         description: product.description,
@@ -51,18 +74,19 @@ const ProductModal = ({ isOpen, onClose, onSuccess, product }) => {
       );
       
       setExistingImages(product.images || []);
-    } else {
-      // Reset Form for New Product
-      setForm({ 
-        name: "", description: "", longDescription: "", category: "", stock: "", featured: false 
-      });
+    } else if (!product && isOpen) {
+      // Reset Form for New Product ONLY if we aren't editing
+      // We don't reset category here so the default category selection works
+      setForm((prev) => ({ 
+        name: "", description: "", longDescription: "", category: prev.category, stock: "", featured: false 
+      }));
       setVariants([{ size: "", mrp: "", salePrice: "" }]);
       setBenefits([""]);
       setExistingImages([]);
       setNewImages([]);
       setFileCount(0);
     }
-  }, [product, isOpen]);
+  }, [product, isOpen, isEdit]);
 
   // --- Handlers for Basic Fields ---
   const handleChange = (e) => {
@@ -161,14 +185,30 @@ const ProductModal = ({ isOpen, onClose, onSuccess, product }) => {
                 required
                 className="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none"
               />
-              <input
-                name="category"
-                placeholder="Category (e.g. Skin Care)"
-                value={form.category}
-                onChange={handleChange}
-                required
-                className="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none"
-              />
+              
+              {/* Dynamic Category Dropdown */}
+              <div>
+                <select
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  required
+                  className="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none bg-white"
+                >
+                  <option value="" disabled>Select a Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                {categories.length === 0 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    No categories found! Please create a category first.
+                  </p>
+                )}
+              </div>
+
               <input
                 name="stock"
                 type="number"
